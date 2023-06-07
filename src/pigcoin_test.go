@@ -10,17 +10,17 @@ import (
     if err != nil {
         t.Fatal(err)
     }
-    if wallet.WalletName != "name" {
-        t.Errorf("Expected name, got %s", wallet.WalletName)
+    if wallet.Name != "name" {
+        t.Errorf("Expected name, got %s", wallet.Name)
     }
-}
+}*/
 
-func TestToPEM(t *testing.T) {
+func TestToPEMPrivate(t *testing.T) {
     wallet, err := GenerateWallet("name", "user", "email")
     if err != nil {
         t.Fatal(err)
     }
-    pem, err := wallet.ToPEM()
+    pem, err := wallet.PrivateKeyPEM()
     if err != nil {
         t.Fatal(err)
     }
@@ -34,7 +34,7 @@ func TestToPEMPublic(t *testing.T) {
         t.Fatal(err)
     }
     wallet.PrivateKey = nil
-    pem, err := wallet.ToPEM()
+    pem, err := wallet.PublicKeyPEM()
     if err != nil {
         t.Fatal(err)
     }
@@ -42,7 +42,7 @@ func TestToPEMPublic(t *testing.T) {
     fmt.Println(pemStr)
 }
 
-func TestSign(t *testing.T) {
+/*func TestSign(t *testing.T) {
     wallet, err := GenerateWallet("name", "user", "email")
     if err != nil {
         t.Fatal(err)

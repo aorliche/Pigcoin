@@ -16,46 +16,53 @@ import (
 type Wallet struct {
     PrivateKey *rsa.PrivateKey
     PublicKey  *rsa.PublicKey
-    WalletName string
-    UserName   string
+    Name       string
+    User       string
     Email      string
 }
 
-func GenerateWallet(wname string, uname string, email string) (*Wallet, error) {
+func GenerateWallet(name string, user string, email string) (*Wallet, error) {
     privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
     if err != nil {
         return nil, err
     }
     publicKey := privateKey.Public().(*rsa.PublicKey)
-    return &Wallet{privateKey, publicKey, wname, uname, email}, nil
+    return &Wallet{privateKey, publicKey, name, user, email}, nil
 }
 
-func (w *Wallet) ToPEM() ([]byte, error) {
+func (w *Wallet) PrivateKeyPEM() ([]byte, error) {
     if w == nil {
         return nil, errors.New("wallet is nil")
     }
-    var typ string = "RSA PRIVATE KEY"
-    var bytes []byte = nil
-    var bytesPEM []byte = nil
-    var err error
-    if w.PrivateKey != nil {
-        bytes, err = x509.MarshalPKCS8PrivateKey(w.PrivateKey)
-        if err != nil {
-            return nil, err
-        }
-    } else if w.PublicKey != nil {
-        bytes, err = x509.MarshalPKIXPublicKey(w.PublicKey)
-        typ = "RSA PUBLIC KEY"
-        if err != nil {
-            return nil, err
-        }
+    if w.PrivateKey == nil {
+        return nil, errors.New("private key is nil")
     }
-    if bytes != nil {
-        bytesPEM = pem.EncodeToMemory(&pem.Block{
-            Type:  typ,
-            Bytes: bytes,
-        })
+    bytes, err := x509.MarshalPKCS8PrivateKey(w.PrivateKey)
+    if err != nil {
+        return nil, err
     }
+    bytesPEM := pem.EncodeToMemory(&pem.Block{
+        Type:  "RSA PRIVATE KEY",
+        Bytes: bytes,
+    })
+    return bytesPEM, nil
+}
+
+func (w *Wallet) PublicKeyPEM() ([]byte, error) {
+    if w == nil {
+        return nil, errors.New("wallet is nil")
+    }
+    if w.PublicKey == nil {
+        return nil, errors.New("public key is nil")
+    } 
+    bytes, err := x509.MarshalPKIXPublicKey(w.PublicKey)
+    if err != nil {
+        return nil, err
+    }
+    bytesPEM := pem.EncodeToMemory(&pem.Block{
+        Type:  "RSA PUBLIC KEY",
+        Bytes: bytes,
+    })
     return bytesPEM, nil
 }
 
