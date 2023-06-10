@@ -13,7 +13,7 @@ import (
 func Validate(field string, s string) error {
     if s == "" {
         return errors.New(field + ": empty string")
-    } else if len(s) > 20 {
+    } else if len(s) > 30 {
         return errors.New(field + ": string too long")
     }
     return nil
