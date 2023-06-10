@@ -10,11 +10,11 @@ import (
     "github.com/aorliche/pigcoin"
 )
 
-func Validate(s string) error {
+func Validate(field string, s string) error {
     if s == "" {
-        return errors.New("empty string")
+        return errors.New(field + ": empty string")
     } else if len(s) > 20 {
-        return errors.New("string too long")
+        return errors.New(field + ": string too long")
     }
     return nil
 }
@@ -204,6 +204,13 @@ func ListTransactions(num int) ([]*Transaction, error) {
 }
 
 func CreateWallet(name string, user string, email string, password string) (int64, error) {
+    names := [4]string{"name", "user", "email", "password"}
+    for i,s := range [4]string{name, user, email, password} {
+        err := Validate(names[i], s)
+        if err != nil {
+            return 0, err
+        }
+    }
     // Find existing wallet
     db, err := sql.Open("mysql", cfg.FormatDSN())
     if err != nil {
@@ -243,7 +250,7 @@ func CreateWallet(name string, user string, email string, password string) (int6
     return id, nil
 }
 
-func SendMoney(from int, to int, amount int64, password string) (int64, error) {
+func Transfer(from int, to int, amount int64, password string) (int64, error) {
     wallets, err := FindWalletsByField("id", "", from)
     if len(wallets) == 0 {
         return 0, errors.New("from wallet not found")

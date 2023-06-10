@@ -9,7 +9,7 @@ import (
 func main() {
     action := flag.String("action", "", 
         "REQUIRED: add-money, create-wallet, delete-wallet, find-wallet, " + 
-        "get-balance, list-transactions, list-wallets, send-money, subtract-money")
+        "get-balance, list-transactions, list-wallets, transfer, subtract-money")
     name := flag.String("name", "", "wallet name")
     user := flag.String("user", "", "user name")
     email := flag.String("email", "", "user email")
@@ -43,14 +43,6 @@ func main() {
             fmt.Printf("%d: Added %d to wallet %d\n", tid, *amount, *id)
         }
         case "create-wallet": {
-            names := [4]string{"name", "user", "email", "password"}
-            for i,s := range [4]string{*name, *user, *email, *password} {
-                err := pdb.Validate(s)
-                if err != nil {
-                    fmt.Println(names[i], ":", err)
-                    return
-                }
-            }
             wid, err := pdb.CreateWallet(*name, *user, *email, *password)
             if err != nil {
                 fmt.Println(err)
@@ -119,7 +111,7 @@ func main() {
                 fmt.Println(t.String())
             }
         }
-        case "send-money": {
+        case "transfer": {
             if *from == 0 {
                 fmt.Println("from is required")
                 return
@@ -136,7 +128,7 @@ func main() {
                 fmt.Println("password is required")
                 return
             }
-            tid, err := pdb.SendMoney(*from , *to, *amount, *password)
+            tid, err := pdb.Transfer(*from , *to, *amount, *password)
             if err != nil {
                 fmt.Println(err)
                 return
