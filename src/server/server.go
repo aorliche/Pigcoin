@@ -3,6 +3,7 @@ package main
 import (
     "encoding/json"
     "fmt"
+    "html"
     "os"
     "net/http"
     //"net/http/httputil"
@@ -51,7 +52,7 @@ func Wallets(w http.ResponseWriter, req *http.Request) {
             http.Error(w, err.Error(), 500)
             return
         }
-        wallets2[i] = Wallet{wallet.Id, wallet.Name, wallet.User, balance}
+        wallets2[i] = Wallet{wallet.Id, html.EscapeString(wallet.Name), html.EscapeString(wallet.User), balance}
     }
     jsn, _ := json.Marshal(wallets2)
     w.Write(jsn)
